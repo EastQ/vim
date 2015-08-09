@@ -133,29 +133,30 @@ func SetTitle()
 	else 
 		call setline(1, "/*************************************************************************") 
 		call append(line("."), "	> File Name: ".expand("%")) 
-		call append(line(".")+1, "	> Author: ") 
-		call append(line(".")+2, "	> Mail: ") 
+		call append(line(".")+1, "	> Author: EastQ") 
+		call append(line(".")+2, "	> Mail: log2013@163.com") 
 		call append(line(".")+3, "	> Created Time: ".strftime("%c")) 
-		call append(line(".")+4, " ************************************************************************/") 
-		call append(line(".")+5, "")
+		call append(line(".")+4, "	> Last Modifiede: ".strftime("%c")) 
+		call append(line(".")+5, " ************************************************************************/") 
+		call append(line(".")+6, "")
 	endif
 	if expand("%:e") == 'cpp'
-		call append(line(".")+6, "#include<iostream>")
-		call append(line(".")+7, "using namespace std;")
-		call append(line(".")+8, "")
+		call append(line(".")+7, "#include<iostream>")
+		call append(line(".")+8, "using namespace std;")
+		call append(line(".")+9, "")
 	endif
 	if &filetype == 'c'
-		call append(line(".")+6, "#include<stdio.h>")
-		call append(line(".")+7, "")
+		call append(line(".")+7, "#include<stdio.h>")
+		call append(line(".")+8, "")
 	endif
 	if expand("%:e") == 'h'
-		call append(line(".")+6, "#ifndef _".toupper(expand("%:r"))."_H")
-		call append(line(".")+7, "#define _".toupper(expand("%:r"))."_H")
-		call append(line(".")+8, "#endif")
+		call append(line(".")+7, "#ifndef _".toupper(expand("%:r"))."_H")
+		call append(line(".")+8, "#define _".toupper(expand("%:r"))."_H")
+		call append(line(".")+9, "#endif")
 	endif
 	if &filetype == 'java'
-		call append(line(".")+6,"public class ".expand("%:r"))
-		call append(line(".")+7,"")
+		call append(line(".")+7,"public class ".expand("%:r"))
+		call append(line(".")+8,"")
 	endif
 	"新建文件后，自动定位到文件末尾
 endfunc 
@@ -469,3 +470,25 @@ let g:ctrlp_custom_ignore = '\v\.(exe|so|dll)$'
 let g:ctrlp_extensions = ['funky']
 
 let NERDTreeIgnore=['\.pyc']
+function SetLastModifiedTime(lineno)
+    let modif_time=strftime("%c")    
+    if a:lineno == "-1"
+        let line = getline(6)
+    else        
+        let line = getline(a:lineno)    
+    endif    
+    if line =~ '^////\sLast Modified'
+        let line = substitute(line, ':\s\+.*\d\{4\}', ':'.modif_time)
+    else
+        let line = '	> Last Modifiede: '.modif_time
+    endif    
+    if a:lineno == "-1"
+        call setline(6, line)
+    else        
+        call append(a:lineno,line)
+    endif
+endfunction
+autocmd BufWrite *.cpp,*.h,*.c exec ":call SetLastModifiedTime(-1)"
+"autocmd BufNewFile *.cpp,*.[ch],*.sh,*.rb,*.java,*.py exec ":call SetTitle()" 
+
+
